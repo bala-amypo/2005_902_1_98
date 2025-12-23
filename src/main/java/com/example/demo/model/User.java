@@ -24,8 +24,7 @@ public class User {
         this.email = email;
         this.role = role;
     }
-
-    // Getters and Setters
+wse3wQ+Q    // Getters and Setters
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
