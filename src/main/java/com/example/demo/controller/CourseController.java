@@ -16,7 +16,6 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    // Create course for instructor
     @PostMapping("/{instructorId}")
     public Course createCourse(@PathVariable Long instructorId,
                                @RequestBody Course course) {
