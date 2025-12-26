@@ -1,50 +1,38 @@
 package com.example.demo.exception;
 
+import com.example.demo.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
-
-        Map<String, Object> error = new HashMap<>();
-        error.put("timestamp", LocalDateTime.now());
-        error.put("status", HttpStatus.NOT_FOUND.value());
-        error.put("error", "Resource Not Found");
-        error.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ApiResponse<String>> handleResourceNotFound(ResourceNotFoundException ex) {
+        ApiResponse<String> response = ApiResponse.<String>builder()
+                .success(false)
+                .message(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<Map<String, Object>> handleDuplicate(DuplicateResourceException ex) {
-
-        Map<String, Object> error = new HashMap<>();
-        error.put("timestamp", LocalDateTime.now());
-        error.put("status", HttpStatus.CONFLICT.value());
-        error.put("error", "Duplicate Resource");
-        error.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<String>> handleIllegalArgument(IllegalArgumentException ex) {
+        ApiResponse<String> response = ApiResponse.<String>builder()
+                .success(false)
+                .message(ex.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex) {
-
-        Map<String, Object> error = new HashMap<>();
-        error.put("timestamp", LocalDateTime.now());
-        error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        error.put("error", "Internal Server Error");
-        error.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ApiResponse<String>> handleGeneral(Exception ex) {
+        ApiResponse<String> response = ApiResponse.<String>builder()
+                .success(false)
+                .message("Internal server error")
+                .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }

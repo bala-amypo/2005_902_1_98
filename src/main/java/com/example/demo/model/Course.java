@@ -1,53 +1,45 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "courses")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "instructor_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "instructor_id", nullable = false)
     private User instructor;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
-    private List<MicroLesson> lessons;
+    private String category;
 
-    public Course() {}
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 
-    public Course(String title, String description, User instructor) {
-        this.title = title;
-        this.description = description;
-        this.instructor = instructor;
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<MicroLesson> microLessons;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
-
-    // Getters and Setters
-    public Long getId() { return id; }
-
-    public void setId(Long id) { this.id = id; }
-
-    public String getTitle() { return title; }
-
-    public void setTitle(String title) { this.title = title; }
-
-    public String getDescription() { return description; }
-
-    public void setDescription(String description) { this.description = description; }
-
-    public User getInstructor() { return instructor; }
-
-    public void setInstructor(User instructor) { this.instructor = instructor; }
-
-    public List<MicroLesson> getLessons() { return lessons; }
-
-    public void setLessons(List<MicroLesson> lessons) { this.lessons = lessons; }
 }
