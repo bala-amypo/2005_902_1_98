@@ -1,53 +1,44 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "recommendations")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Recommendation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String reason;
-
-    private LocalDateTime createdAt;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "lesson_id")
-    private MicroLesson lesson;
+    @Column(nullable = false)
+    private LocalDateTime generatedAt;
 
-    public Recommendation() {
-        this.createdAt = LocalDateTime.now();
+    @Column(nullable = false, length = 1000)
+    private String recommendedLessonIds;
+
+    @Column(length = 2000)
+    private String basisSnapshot;
+
+    @Column(nullable = false)
+    private BigDecimal confidenceScore;
+
+    @PrePersist
+    protected void onCreate() {
+        generatedAt = LocalDateTime.now();
     }
-
-    public Recommendation(String reason) {
-        this.reason = reason;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    // Getters and Setters
-    public Long getId() { return id; }
-
-    public void setId(Long id) { this.id = id; }
-
-    public String getReason() { return reason; }
-
-    public void setReason(String reason) { this.reason = reason; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-
-    public User getUser() { return user; }
-
-    public void setUser(User user) { this.user = user; }
-
-    public MicroLesson getLesson() { return lesson; }
-
-    public void setLesson(MicroLesson lesson) { this.lesson = lesson; }
 }

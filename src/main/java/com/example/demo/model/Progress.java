@@ -1,54 +1,62 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "progress")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Progress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int completionPercentage;
-
-    private boolean completed;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "lesson_id")
-    private MicroLesson lesson;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "micro_lesson_id", nullable = false)
+    private MicroLesson microLesson;
 
-    public Progress() {}
+    @Column(nullable = false)
+    @Builder.Default
+    private String status = "NOT_STARTED";
 
-    public Progress(int completionPercentage, boolean completed) {
-        this.completionPercentage = completionPercentage;
-        this.completed = completed;
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer progressPercent = 0;
+
+    @Column(nullable = false)
+    private LocalDateTime lastAccessedAt;
+
+    private BigDecimal score;
+
+    @PrePersist
+    protected void onCreate() {
+        if (lastAccessedAt == null) {
+            lastAccessedAt = LocalDateTime.now();
+        }
+        if (status == null) {
+            status = "NOT_STARTED";
+        }
+        if (progressPercent == null) {
+            progressPercent = 0;
+        }
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-
-    public void setId(Long id) { this.id = id; }
-
-    public int getCompletionPercentage() { return completionPercentage; }
-
-    public void setCompletionPercentage(int completionPercentage) {
-        this.completionPercentage = completionPercentage;
+    @PreUpdate
+    protected void onUpdate() {
+        lastAccessedAt = LocalDateTime.now();
     }
-
-    public boolean isCompleted() { return completed; }
-
-    public void setCompleted(boolean completed) { this.completed = completed; }
-
-    public User getUser() { return user; }
-
-    public void setUser(User user) { this.user = user; }
-
-    public MicroLesson getLesson() { return lesson; }
-
-    public void setLesson(MicroLesson lesson) { this.lesson = lesson; }
 }
