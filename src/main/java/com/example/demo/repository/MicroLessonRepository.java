@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface MicroLessonRepository extends JpaRepository<MicroLesson, Long> {
+    List<MicroLesson> findByCourseId(Long courseId);
     
     @Query("SELECT m FROM MicroLesson m WHERE " +
            "(:tags IS NULL OR m.tags LIKE %:tags%) AND " +

@@ -1,46 +1,51 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "micro_lessons")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class MicroLesson {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
-
-    @Column(nullable = false)
+    
+    @NotBlank
+    @Column(length = 150)
     private String title;
-
-    @Column(nullable = false)
+    
+    @NotNull
+    @Positive
     private Integer durationMinutes;
-
-    @Column(nullable = false)
+    
+    @NotBlank
+    @Column(length = 50)
     private String contentType;
-
-    @Column(nullable = false)
+    
+    @NotBlank
+    @Column(length = 50)
     private String difficulty;
-
+    
+    @Column(length = 500)
     private String tags;
-
+    
+    @NotNull
     private LocalDate publishDate;
-
-    @OneToMany(mappedBy = "microLesson", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Progress> progressList;
 }

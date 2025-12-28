@@ -1,6 +1,10 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,57 +14,48 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "progress")
+@Table(name = "progress", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "micro_lesson_id"}))
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Progress {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "micro_lesson_id", nullable = false)
     private MicroLesson microLesson;
-
-    @Column(nullable = false)
+    
+    @NotBlank
+    @Column(length = 20)
     @Builder.Default
     private String status = "NOT_STARTED";
-
-    @Column(nullable = false)
-    @Builder.Default
-    private Integer progressPercent = 0;
-
-    @Column(nullable = false)
+    
+    @NotNull
+    @Min(0)
+    @Max(100)
+    private Integer progressPercent;
+    
     private LocalDateTime lastAccessedAt;
-
+    
+    @Column(precision = 5, scale = 2)
     private BigDecimal score;
-
+    
+    private LocalDateTime completedAt;
+    
     @PrePersist
     protected void onCreate() {
-        if (lastAccessedAt == null) {
-            lastAccessedAt = LocalDateTime.now();
-        }
-        if (status == null) {
-            status = "NOT_STARTED";
-        }
-        if (progressPercent == null) {
-            progressPercent = 0;
-        }
+        this.lastAccessedAt = LocalDateTime.now();
     }
-
+    
     public void prePersist() {
         onCreate();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        lastAccessedAt = LocalDateTime.now();
     }
 }

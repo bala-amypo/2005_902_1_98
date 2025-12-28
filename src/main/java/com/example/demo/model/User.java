@@ -1,63 +1,53 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "users")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class User {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
+    
+    @NotBlank
+    @Column(length = 100)
     private String fullName;
-
-    @Column(unique = true, nullable = false)
+    
+    @Email
+    @NotBlank
+    @Column(unique = true)
     private String email;
-
-    @Column(nullable = false)
+    
+    @NotBlank
     private String password;
-
-    @Column(nullable = false)
+    
+    @NotBlank
     @Builder.Default
     private String role = "LEARNER";
-
+    
+    @Column(length = 50)
     private String preferredLearningStyle;
-
-    @Column(nullable = false)
+    
     private LocalDateTime createdAt;
-
-    @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Course> courses;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Progress> progressList;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Recommendation> recommendations;
-
+    
     @PrePersist
     protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-        if (role == null) {
-            role = "LEARNER";
-        }
+        this.createdAt = LocalDateTime.now();
     }
-
+    
     public void prePersist() {
         onCreate();
     }
