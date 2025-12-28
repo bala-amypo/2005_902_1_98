@@ -40,6 +40,12 @@ public class Course {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
+
+    public void prePersist() {
+        onCreate();
     }
 }

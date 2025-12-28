@@ -50,9 +50,15 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
         if (role == null) {
             role = "LEARNER";
         }
+    }
+
+    public void prePersist() {
+        onCreate();
     }
 }

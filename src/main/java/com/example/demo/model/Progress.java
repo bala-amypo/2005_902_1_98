@@ -55,6 +55,10 @@ public class Progress {
         }
     }
 
+    public void prePersist() {
+        onCreate();
+    }
+
     @PreUpdate
     protected void onUpdate() {
         lastAccessedAt = LocalDateTime.now();
