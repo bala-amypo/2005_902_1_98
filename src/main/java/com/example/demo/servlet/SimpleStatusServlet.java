@@ -13,10 +13,11 @@ import java.io.PrintWriter;
 public class SimpleStatusServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    public void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
-        response.setContentType("application/json");
+        response.setStatus(200);
+        response.setContentType("text/plain");
         PrintWriter out = response.getWriter();
-        out.println("{\"status\":\"OK\",\"service\":\"Micro-Learning Content Recommendation\"}");
+        out.write("Servlet Alive");
     }
 }
