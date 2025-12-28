@@ -34,12 +34,20 @@ public class ProgressServiceImpl implements ProgressService {
         MicroLesson lesson = microLessonRepository.findById(lessonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Lesson not found"));
         
+        if (progress.getProgressPercent() == null) {
+            progress.setProgressPercent(0);
+        }
+        
         if (progress.getProgressPercent() < 0 || progress.getProgressPercent() > 100) {
             throw new IllegalArgumentException("Progress percent must be between 0 and 100");
         }
         
         if ("COMPLETED".equals(progress.getStatus()) && progress.getProgressPercent() != 100) {
             throw new IllegalArgumentException("Completed status requires 100% progress");
+        }
+        
+        if (progress.getStatus() == null) {
+            progress.setStatus("NOT_STARTED");
         }
         
         Progress existing = progressRepository.findByUserIdAndMicroLessonId(userId, lessonId)

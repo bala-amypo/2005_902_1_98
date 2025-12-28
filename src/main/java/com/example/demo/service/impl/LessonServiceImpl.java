@@ -26,12 +26,20 @@ public class LessonServiceImpl implements LessonService {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
         
-        if (lesson.getDurationMinutes() == null || lesson.getDurationMinutes() <= 0 || lesson.getDurationMinutes() > 15) {
+        if (lesson.getDurationMinutes() == null) {
+            lesson.setDurationMinutes(10); // Default duration
+        }
+        
+        if (lesson.getDurationMinutes() <= 0 || lesson.getDurationMinutes() > 15) {
             throw new IllegalArgumentException("Duration must be between 1 and 15 minutes");
         }
         
-        if (lesson.getContentType() == null || lesson.getDifficulty() == null) {
-            throw new IllegalArgumentException("Content type and difficulty are required");
+        if (lesson.getContentType() == null) {
+            lesson.setContentType("TEXT"); // Default content type
+        }
+        
+        if (lesson.getDifficulty() == null) {
+            lesson.setDifficulty("BEGINNER"); // Default difficulty
         }
         
         lesson.setCourse(course);
